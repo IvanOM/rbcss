@@ -28,12 +28,12 @@ In a ruby file, require css lib file and pass a block to CSS.style function:
 require 'css'
 
 CSS.style do
-  to('body'){
+  to("body"){
     background_color "green"
   }
-  to('section.main div:nth-of-type(1)'){
-    width '100%'
-    height '64px'
+  to("section.main div:nth-of-type(1)"){
+    width "100%"
+    height "64px"
   }
 end
 ```
@@ -41,7 +41,7 @@ Run your file with Ruby and that is all. You will have a new css file with the s
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/rbcss/fork )
+1. Fork it ( https://github.com/IvanOM/rbcss/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
