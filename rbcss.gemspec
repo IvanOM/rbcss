@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = Rbcss::VERSION
   spec.authors       = ["Ivan"]
   spec.email         = ["ivan.eng.controle@gmail.com"]
-  spec.summary       = %q{A Ruy DSL to generate css.}
+  spec.summary       = %q{A Ruby DSL to generate css.}
   spec.description   = %q{This command line application generates css stylesheets from a Ruby DSL code.}
   spec.homepage      = ""
   spec.license       = "MIT"
@@ -22,4 +22,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "cucumber", "~> 1.0"
   spec.add_development_dependency "aruba", "~> 0.6"
+  spec.add_development_dependency "rspec", "~> 3.1"
 end
