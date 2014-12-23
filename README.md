@@ -54,7 +54,7 @@ end
 ```
 or you can use shell:
 
-  $ ruby mycss.rb > mycss.css
+    $ ruby mycss.rb > mycss.css
 
 ### Adding functionality
 
