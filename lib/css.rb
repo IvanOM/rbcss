@@ -1,4 +1,3 @@
-$stdout.reopen("#{$0.gsub('rb', 'css')}")
 module CSS
 
   # Send a message to the module_eval method of CSS module. It is just an Alias.
@@ -19,10 +18,8 @@ module CSS
     $stdout.write "#{method.to_s.gsub('_', '-')}:#{args[0]};"
   end
 
-  # Redirect the method calls inside CSS module to selector or property
-  # @param name [Symbol] the called method name as a Symbol
-  # @param *args [Array] the array of optional parameters passed in
-  # @param &block [Proc] the optional code block to be executed
+  private
+
   def self.method_missing name, *args, &block
     send(:selector, *args, &block) if block
     send(:property, name, *args, &block) if args[0] and !block
