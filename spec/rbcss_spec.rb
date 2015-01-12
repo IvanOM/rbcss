@@ -1,4 +1,19 @@
 require "rbcss"
+String.class_eval do
+  def align_left
+    string = dup
+    string[0] = '' if string[0] == "\n"
+    string[-1] = '' if string[-1] == "\n"
+    relevant_lines = string.split(/\r\n|\r|\n/).select { |line| line.size > 0 }
+    indentation_levels = relevant_lines.map do |line|
+      match = line.match(/^( +)[^ ]+/)
+      match ? match[1].size : 0
+    end
+    indentation_level = indentation_levels.min
+    string.gsub! /^#{' ' * indentation_level}/, '' if indentation_level > 0
+    string
+  end
+end
 
 RSpec.describe RBCSS, type: :module do
   describe "Application" do
@@ -17,35 +32,32 @@ RSpec.describe RBCSS, type: :module do
     end
 
     describe "#convert" do
-      before do
-        allow(File).to receive(:read).and_return(
-          """
-          @media max-width(300px){
-            color:green;
-            body{
-              -webkit-animation:expand 1s linear;
-            }
-            border:1px solid green;
-            }
-          """
-        )
-      end
-      it "converts a css file to Ruby code" do
-        expect{
-          rbcss = RBCSS::Application.new(["convert", "mycss.css", "to-ruby"])
-          rbcss.run
-        }.to output(
-"""require 'css'
+      context "converts a css block" do
+        before do
+          allow(File).to receive(:read).and_return(
+            """
+              body{
+                -webkit-animation:expand 1s linear;
+              }
+            """
+          )
+        end
+        it "converts a css file to Ruby code" do
+          expect{
+            rbcss = RBCSS::Application.new(["convert", "mycss.css", "to-ruby"])
+            rbcss.run
+          }.to output(
+            <<-text.align_left
+            require 'css'
 
-CSS.style do
-  to('@media max-width(300px)'){
-    color 'green'
-    to('body'){
-      _webkit_animation 'expand 1s linear'
-    }
-  }
-end"""
-        ).to_stdout
+            CSS.style do
+              to('body'){
+                _webkit_animation 'expand 1s linear'
+              }
+            end
+            text
+          ).to_stdout
+        end
       end
     end
   end

@@ -20,3 +20,32 @@ Feature: Convert CSS structure to Ruby code
         }
       end
       """
+
+  Scenario: Convert a nested block declaration
+    Given a file named "mycss.css" with:
+      """
+      @media screen{
+        body{
+          -webkit-animation: expand 1s linear;
+        }
+        *{
+          color: blue;
+        }
+      }
+      """
+    When I run `rbcss convert mycss.css to-ruby`
+    Then the output should contain:
+      """
+      require 'css'
+
+      CSS.style do
+        to('@media screen'){
+          to('body'){
+            _webkit_animation 'expand 1s linear'
+          }
+          to('*'){
+            color 'blue'
+          }
+        }
+      }
+      """
