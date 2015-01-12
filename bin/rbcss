@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require "rbcss"
+
+rbcss = RBCSS::Application.new(ARGV)
+rbcss.run
