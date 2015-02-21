@@ -1,4 +1,4 @@
-require "css"
+require "spec_helper"
 
 RSpec.describe CSS, :type => :module do
   describe "#style" do
