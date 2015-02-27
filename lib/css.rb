@@ -1,7 +1,7 @@
 class CSS
 
-  # Send a message to the module_eval method of CSS module. It is just an Alias.
-  # @param &block [Proc] the code block to be executed in the CSS context
+  # Send a message to the instance_eval method of a CSS instace. It is just an Alias.
+  # @param &block [Proc] the code block to be executed in the CSS instance context
   def style &block
     send :instance_eval, &block
   end
