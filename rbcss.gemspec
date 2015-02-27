@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["ivan.eng.controle@gmail.com"]
   spec.summary       = %q{A Ruby DSL to generate css.}
   spec.description   = %q{This command line application generates css stylesheets from a Ruby DSL code.}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/ivanom/rbcss"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
