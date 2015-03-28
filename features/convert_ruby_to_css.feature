@@ -9,7 +9,7 @@ Feature: Converting Ruby DSL code to CSS
       """
       require 'css'
 
-      CSS.style do
+      CSS.new.style do
         to('body'){
           _webkit_animation "expand 1s linear"
         }
@@ -26,7 +26,7 @@ Feature: Converting Ruby DSL code to CSS
       """
       require 'css'
 
-      CSS.style do
+      CSS.new.style do
         to('@media (max-width: 800px)'){
           to('body'){
             _webkit_animation "expand 1s linear"

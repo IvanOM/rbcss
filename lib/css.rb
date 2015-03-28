@@ -1,4 +1,10 @@
+require 'vendors'
+
 class CSS
+  
+  def initialize
+    self.extend Vendors
+  end
 
   # Send a message to the instance_eval method of a CSS instace. It is just an Alias.
   # @param &block [Proc] the code block to be executed in the CSS instance context
