@@ -8,8 +8,9 @@ Feature: Converting Ruby DSL code to CSS
     Given a file named "mycss.rb" with:
       """
       require 'css'
-
-      CSS.style do
+      
+      css = CSS.new
+      css.style do
         to('body'){
           _webkit_animation "expand 1s linear"
         }
@@ -26,7 +27,8 @@ Feature: Converting Ruby DSL code to CSS
       """
       require 'css'
 
-      CSS.style do
+      css = CSS.new
+      css.style do
         to('@media (max-width: 800px)'){
           to('body'){
             _webkit_animation "expand 1s linear"
