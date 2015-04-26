@@ -1,152 +1,101 @@
 module CSS
   class Node
-    def initialize
-      @children = {selectors: [], properties: [], media_selectors: []}
+    def initialize *args, &block
+      @children = []
+      send(:instance_eval, &block) if block_given?
     end
-    
+
     def to_s
-      msg = ""
-      @children.each do |type, children|
-        if !children.empty?
-          children.each do |node|
-            msg += node.to_s
-          end
-        end
-      end
-      return msg
+      collection_css(@children)
     end
 
-    # Write a css property declaration with the name of the called method
-    # @param method [Symbol] the called method name as a symbol
-    def property method, *args
-      @children[:properties] << CSS::Property.new(method, args[0])
-    end
-
-    # Write a css selector declaration to $stdout
-    # @param selector [String] the selector name or string
-    def selector selector, &block
-      @children[:selectors] << CSS::Selector.new(selector, &block)
-    end
-    
-    def media_selector selector, &block
-      @children[:media_selectors] << CSS::MediaSelector.new(selector, &block)
-    end
-    
     private
-    
+
     def selectors
-      @children[:selectors]
+      @children.select { |c| c.is_a? CSS::Selector }
     end
-    
+
     def properties
-      @children[:properties]
+      @children.select { |c| c.is_a? CSS::Property }
     end
-    
+
     def media_selectors
-      @children[:media_selectors]
+      @children.select { |c| c.is_a? CSS::MediaSelector }
     end
-    
-    def method_missing name, *args, &block
-      send(:selector, *args, &block) if block && !args[0].include?("@media")
-      send(:media_selector, *args, &block) if block && args[0].include?("@media")
-      send(:property, name, *args) if args[0] and !block
+
+    def collection_css(collection)
+      collection.reduce("") do |msg, node|
+        msg += node.to_s
+      end
+    end
+
+    def method_missing method, value, *args, &block
+      if block_given?
+        @children << CSS::Selector.new(value, &block) if !value.include?("@media")
+        @children << CSS::MediaSelector.new(value, &block) if value.include?("@media")
+      else
+        @children << CSS::Property.new(method, value) if value
+      end
     end
   end
-  
+
   class Selector < Node
     attr_accessor :name
 
     def initialize name, &block
-      super()
       @name = name
-      send(:instance_eval, &block)
-    end
-    
-    def children_to_s
-      msg = ''
-      children = properties + media_selectors
-      children.each do |node|
-        msg += node.to_s
-      end
-      msg = "#{@name}{#{msg}}" if !children.empty?
-      return msg
+      super()
     end
 
     def to_s
       msg = ''
-      
-      msg = children_to_s
-      
+
+      msg = "#{@name}{#{collection_css(not_selectors)}}" if not_selectors.any?
+
       selectors.each do |selector|
         node = selector.clone
-        parent_selectors = @name.split(',').map(&:strip)
-        child_selectors = node.name.split(',').map(&:strip)
-        combination = parent_selectors.product(child_selectors)
-        combination.map! {|element| element.join(' ') }
-        node.name = "#{combination.join(',')}"
+        node.name = "#{combine_with(node).join(',')}"
         msg << node.to_s
       end
       return msg
     end
+
+    def split_selectors
+      @name.split(',').map(&:strip)
+    end
+
+    def combine_with(node)
+      split_selectors.product(node.split_selectors).map { |element| element.join(' ') }
+    end
+
+    def not_selectors
+      @children.reject { |c| c.is_a? CSS::Selector }
+    end
   end
-  
+
   class MediaSelector < Node
     def initialize selector, &block
-      super()
       @selector = selector
-      send(:instance_eval, &block)
+      super()
     end
-    
+
     def to_s
       "#{@selector}{#{super}}"
     end
   end
-  
+
   class Property < Node
     def initialize name, value
-      super()
       @name = name
       @value = value
+      super()
     end
-    
+
     def to_s
       "#{@name.to_s.gsub('_', '-')}:#{@value};"
     end
   end
-  
+
   class Style < Node
-    def initialize &block
-      super()
-      send(:instance_eval, &block)
-    end
   end
-end
-
-class CSSOld
-
-  # Send a message to the instance_eval method of a CSS instace. It is just an Alias.
-  # @param &block [Proc] the code block to be executed in the CSS instance context
-  def style &block
-    send :instance_eval, &block
-  end
-
-  # Write a css selector declaration to $stdout
-  # @param selector [String] the selector name or string
-  def selector selector, &block
-    $stdout.write "#{selector}{"; yield; $stdout.write "}"
-  end
-
-  # Write a css property declaration with the name of the called method
-  # @param method [Symbol] the called method name as a symbol
-  def property method, *args, &block
-    $stdout.write "#{method.to_s.gsub('_', '-')}:#{args[0]};"
-  end
-
-  private
-
-  def method_missing name, *args, &block
-    send(:selector, *args, &block) if block
-    send(:property, name, *args, &block) if args[0] and !block
-  end
-
 end
